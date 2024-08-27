@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>利息计算</title>
+    <script src="./jquery.js"></script>
+    <script src="./jquery.min.js"></script>
+    <script>
+        function getByJquery(that) {
+            let money = $("#money").val();
+            let startTime = $("#startTime").val();
+            let endTime = $("#endTime").val();
+            let interest = $("#interest");
+            let total = 0;
+            while (startTime <= endTime){
+                console.log(startTime+"-->"+findLPR(startTime))
+                let lpr = findLPR(startTime);
+                if(-1 == lpr){
+                    interest.text("未找到"+startTime+"LPR计算失败");
+                    return;
+                }
+                total += (lpr * money);
+                startTime = nextDate(startTime)
+            }
+            interest.text("总利息："+total);
+        }
+
+        function findLPR(date){
+            for (let i = 1; i <=12 ; i++) {
+                let startTime = $("#lpr" + i + "DateStart").val();
+                let endTime = $("#lpr" + i + "DateEnd").val();
+                let lpr = $("#lpr" + i).val();
+                if (date >= startTime && date <= endTime) {
+                    return lpr / 100 / 360;
+                }
+            }
+            return -1;
+        }
+
+        function nextDate(date = new Date()) {
+            date = new Date(date);
+            date = +date + 1000 * 60 * 60 * 24;
+            date = new Date(date);
+            return timeString(new Date(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()).getTime());
+        }
+
+        function timeString(time){
+            let datetime = new Date();
+            datetime.setTime(time);
+            let year = datetime.getFullYear();
+            let month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+            let date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+            //let hour = datetime.getHours()< 10 ? "0" + datetime.getHours() : datetime.getHours();
+            //let minute = datetime.getMinutes()< 10 ? "0" + datetime.getMinutes() : datetime.getMinutes();
+            //let second = datetime.getSeconds()< 10 ? "0" + datetime.getSeconds() : datetime.getSeconds();
+            return year + "-" + month + "-" + date;//+" "+hour+":"+minute+":"+second;
+        }
+
+        $(function(){
+            var date = new Date();
+            var month = date.getMonth()+1
+            var day =date.getDate();
+
+            if(date.getMonth()<10){
+                 month = "0"+month;
+            }
+            if(date.getDate()<10){
+                day = "0"+day;
+            }
+
+            var datew = date.getFullYear()+"-"+month+"-"+day;
+            var datewstr = datew.toString();
+
+            $("#endTime").val(datewstr);
+            $("#lpr11DateEnd").val(datewstr);
+        })
+    </script>
+    <style>
+        body{
+            background-color: #efefef;
+        }
+        img{
+            width: 100px;
+        }
+        .filled{
+            background-color: #fff;
+            width:400px;
+            padding:10px 0;
+
+        }
+        .filled div, .notFilled div{
+            padding-top:4px;
+        }
+        .notFilled{
+            background-color: #fff;
+            width:400px;
+        }
+        table{
+            border-bottom: 1px solid #ccc;
+            border-left: 1px solid #ccc;
+        }
+        table tr{
+            /* height:100px; */
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+        table tr th{
+            /* border:1px solid #AAA; */
+            border-top: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input{
+            width:200px;
+            /* height:20px; */
+            font-size:1.3em;
+            font-weight:bold;
+            line-height: 1.5;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding-left: 10px;
+            box-sizing: border-box;
+        }
+        input[type="date"]{
+            padding: 3px 2px;
+            box-sizing: border-box;
+        }
+        input[type="date"]::-webkit-datetime-edit{
+            /* content: '起始时间'; */
+            color: rgb(188,188,188);
+            padding-left: 10px;
+        }
+        /* 控制年月日这个区域的 */
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+            /* background-color: #eee;  */
+        }
+        /* 这是控制年月日之间的斜线或短横线的 */
+        input[type="date"]::-webkit-datetime-edit-text {
+            color: blue;
+            padding: 0 .3em;
+        }
+        /* 控制年字 */
+        input[type="date"]::-webkit-datetime-edit-year-field {
+            color: purple;
+        }
+        /* 控制月字 */
+        input[type="date"]::-webkit-datetime-edit-month-field {
+            color: purple;
+        }
+        /* 控制日字 */
+        input[type="date"]::-webkit-datetime-edit-day-field  {
+            color: purple;
+        }
+        /* 去掉date中上下小三角，但是保留input类型为number的小三角。 */
+        input[type=date]::-webkit-inner-spin-button {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+<table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto">
+    <caption style="font-size: 50px"><a href="https://www.boc.cn/fimarkets/lilv/fd32/201310/t20131031_2591219.html" target="_blank" style="text-decoration: none">利息计算点击此处查询LPR</a></caption>
+    <caption>利息计算点击此处查询</caption>
+    <tr style="height: 100px">
+        <th colspan="2" id="interest" style="background-color: #FFFFFF">总利息</th>
+        <th style="background-color: #FFFFFF;cursor:pointer;font-size: 4em" onclick="getByJquery(this)">=</th>
+    </tr>
+    <tr style="height: 60px">
+        <th class="notFilled">金额：<input type="text" id="money" style="width:240px"></th>
+        <th class="notFilled">开始：<input type="date" id="startTime"></th>
+        <th class="notFilled">结束: <input type="date" id="endTime"></th>
+    </tr>
+    <tr>
+        <th class="filled">
+            <div>&emsp;LPR: <input type="number" class="lpr" id="lpr1" value="4.35"/>%</div>
+            <div>开始: <input type="date" id="lpr1DateStart" value="2015-10-24"/></div>
+            <div>结束: <input type="date" id="lpr1DateEnd" value="2019-08-19"/></div>
+        </th>
+        <th class="filled">
+            <div>&emsp;LPR: <input type="number" class="lpr" id="lpr2" value="4.25"/>%</div>
+            <div> 开始:<input type="date" id="lpr2DateStart" value="2019-08-20"/></div>
+            <div> 结束:<input type="date" id="lpr2DateEnd" value="2019-09-19"/></div>
+        </th>
+        <th class="filled">
+            <div>&emsp;LPR: <input type="number" class="lpr" id="lpr3" value="4.20"/>%</div>
+            <div> 开始: <input type="date" id="lpr3DateStart" value="2019-09-20"/></div>
+            <div>结束: <input type="date" id="lpr3DateEnd" value="2019-11-19"/></div>
+        </th>
+    </tr>
+    <tr>
+        <th class="filled">
+            <div>&emsp;LPR: <input type="number" class="lpr" id="lpr4" value="4.15"/>%</div>
+            <div>开始: <input type="date" id="lpr4DateStart" value="2019-11-20"/></div>
+            <div>结束: <input type="date" id="lpr4DateEnd" value="2020-02-19"/></div>
+        </th>
+        <th class="filled">
+            <div> &emsp;LPR: <input type="number" class="lpr" id="lpr5" value="4.05"/>%</div>
+            <div>开始: <input type="date" id="lpr5DateStart" value="2020-02-20"/></div>
+            <div>结束: <input type="date" id="lpr5DateEnd" value="2020-04-19"/></div>
+
+        </th>
+        <th class="filled">
+            <div> &emsp;LPR: <input type="number" class="lpr" id="lpr6" value="3.85"/>%</div>
+            <div>开始: <input type="date" id="lpr6DateStart" value="2020-04-20"/></div>
+            <div> 结束: <input type="date" id="lpr6DateEnd" value="2021-12-19"/></div>
+        </th>
+    </tr>
+    <tr>
+        <th class="filled">
+            <div>&emsp;LPR: <input type="number" class="lpr" id="lpr7" value="3.80"/>%</div>
+            <div>开始: <input type="date" id="lpr7DateStart" value="2021-12-20"/></div>
+            <div>结束: <input type="date" id="lpr7DateEnd" value="2022-01-19"/></div>
+        </th>
+        <th class="filled">
+            <div> &emsp;LPR: <input type="number" class="lpr" id="lpr8" value="3.70"/>%</div>
+            <div>开始: <input type="date" id="lpr8DateStart" value="2022-01-20"/></div>
+            <div>结束: <input type="date" id="lpr8DateEnd" value="2022-08-21"/></div>
+        </th>
+        <th class="filled">
+            <div>&emsp;LPR: <input type="number" class="lpr" id="lpr9" value="3.65"/>%</div>
+            <div>开始: <input type="date" id="lpr9DateStart" value="2022-08-22"/></div>
+            <div>结束: <input type="date" id="lpr9DateEnd" value="2023-06-19"/></div>
+        </th>
+    </tr>
+    <tr>
+        <th class="filled">
+            <div> &emsp;LPR: <input type="number" class="lpr" id="lpr10" value="3.55"/>%</div>
+            <div>开始: <input type="date" id="lpr10DateStart" value="2023-06-20"/></div>
+            <div>结束: <input type="date" id="lpr10DateEnd" value="2023-08-20"/></div>
+        </th>
+        <th class="notFilled">
+            <div>&emsp;LPR: <input type="number" class="lpr" id="lpr11" value="3.45"/>%</div>
+            <div>开始: <input type="date" id="lpr11DateStart" value="2023-08-21"/></div>
+            <div>结束: <input type="date" id="lpr11DateEnd"/></div>
+        </th>
+        <th class="notFilled">
+            <div>&emsp;LPR: <input type="number" class="lpr" id="lpr12" />%</div>
+            <div>开始: <input type="date" id="lpr12DateStart" /></div>
+            <div>结束: <input type="date" id="lpr12DateEnd" /></div>
+        </th>
+    </tr>
+    <!--
+    <tr>
+      <th class="filled">
+        <img src="/compute/1.jpg" alt="">
+      </th>
+        <th class="notFilled">
+          <img src="/compute/2.jpg" alt="">
+        </th>
+        <th class="notFilled">
+          <img src="/compute/3.jpg" alt="">
+        </th>
+      </tr>
+      -->
+</table>
+</body>
+</html>
